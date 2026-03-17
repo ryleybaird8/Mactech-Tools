@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mactech LinkedIn Post Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1a1d2e;
+    --bg-secondary: #141624;
+    --bg-tertiary: #222540;
+    --bg-card: #1e2135;
+    --text: #e8eaf6;
+    --text-secondary: #8b90b8;
+    --text-tertiary: #4a4f72;
+    --border: rgba(255,255,255,0.07);
+    --border-med: rgba(255,255,255,0.13);
+    --border-strong: rgba(139,147,255,0.5);
+    --accent: #6c63ff;
+    --accent-2: #a78bfa;
+    --grad-header: linear-gradient(135deg, #6c63ff 0%, #a78bfa 50%, #06b6d4 100%);
+    --grad-btn: linear-gradient(135deg, #6c63ff, #a78bfa);
+    --grad-active: linear-gradient(135deg, rgba(108,99,255,0.25), rgba(167,139,250,0.15));
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --font: 'Poppins', sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg-secondary);
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(108,99,255,0.12) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 100%, rgba(6,182,212,0.08) 0%, transparent 60%);
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  .header { margin-bottom: 2rem; }
+  .header h1 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    background: var(--grad-header);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    display: inline-block;
+  }
+  .header p { font-size: 13px; color: var(--text-secondary); margin-top: 5px; font-weight: 300; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  .section-label {
+    font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+  }
+
+  .api-row { display: flex; gap: 8px; align-items: center; }
+  .api-row input { flex: 1; }
+
+  input[type="text"], input[type="password"], select, textarea {
+    width: 100%; padding: 9px 12px; font-size: 13px;
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius-md); color: var(--text); font-family: var(--font);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--border-strong);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+  }
+  textarea { resize: vertical; line-height: 1.6; }
+
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+  .pill {
+    padding: 5px 14px; font-size: 11px; font-weight: 500; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--border-med); background: transparent;
+    color: var(--text-secondary); transition: all 0.2s; font-family: var(--font);
+    user-select: none; letter-spacing: 0.01em;
+  }
+  .pill.active {
+    background: var(--grad-active); color: var(--text);
+    border-color: rgba(108,99,255,0.5); font-weight: 600;
+  }
+  .pill:hover { border-color: rgba(108,99,255,0.4); color: var(--text); }
+
+  .btn {
+    padding: 9px 18px; font-size: 12px; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--border-med); border-radius: var(--radius-md);
+    background: var(--bg-tertiary); color: var(--text); font-family: var(--font);
+    transition: all 0.2s; white-space: nowrap; letter-spacing: 0.01em;
+  }
+  .btn:hover { background: var(--bg-card); border-color: var(--border-med); }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: var(--grad-btn); color: #fff;
+    border: none; box-shadow: 0 4px 15px rgba(108,99,255,0.35);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 20px rgba(108,99,255,0.5); opacity: 0.92; }
+  .btn-sm { padding: 6px 13px; font-size: 11px; }
+  .btn-xs { padding: 3px 10px; font-size: 11px; }
+  .btn-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+
+  .tab-row {
+    display: flex; border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+  .tab {
+    padding: 9px 16px; font-size: 12px; font-weight: 500; cursor: pointer;
+    background: none; border: none; border-bottom: 2px solid transparent;
+    color: var(--text-secondary); font-family: var(--font); margin-bottom: -1px;
+    transition: color 0.15s; letter-spacing: 0.01em;
+  }
+  .tab.active {
+    color: var(--accent-2);
+    border-bottom-color: var(--accent-2); font-weight: 600;
+  }
+  .tab:hover { color: var(--text); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+  .cta-option {
+    padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);
+    cursor: pointer; background: var(--bg-secondary); transition: all 0.2s; user-select: none;
+  }
+  .cta-option:hover { border-color: var(--border-med); background: var(--bg-tertiary); }
+  .cta-option.selected {
+    border-color: rgba(108,99,255,0.5);
+    background: var(--grad-active);
+  }
+  .cta-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .cta-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; font-weight: 300; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+  .output-area {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem;
+    min-height: 120px; font-size: 14px; line-height: 1.8;
+    color: var(--text); white-space: pre-wrap; margin-bottom: 0.5rem;
+    font-weight: 300;
+  }
+  .output-placeholder { color: var(--text-tertiary); font-size: 13px; }
+  .output-actions { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+
+  .char-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+  .char-count { font-size: 11px; color: var(--text-secondary); white-space: nowrap; font-weight: 500; }
+  .char-track { flex: 1; height: 3px; background: var(--border); border-radius: 2px; }
+  .char-fill { height: 100%; border-radius: 2px; background: var(--grad-btn); transition: width 0.3s; }
+  .char-fill.warn { background: linear-gradient(90deg, #f59e0b, #d97706); }
+  .char-fill.over { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+  .status { font-size: 11px; color: var(--text-secondary); padding: 4px 0; min-height: 20px; font-weight: 400; }
+  .status.loading { color: var(--accent-2); }
+  .status.error { color: #f87171; }
+  .status.ok { color: #34d399; }
+
+  .badge {
+    display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 600; border-radius: 10px;
+    background: rgba(108,99,255,0.2); color: var(--accent-2); margin-left: 5px;
+  }
+
+  .hooks-grid { display: grid; gap: 8px; margin-bottom: 1rem; }
+  .hook-item {
+    padding: 12px 14px; font-size: 13px; line-height: 1.5;
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius-md); cursor: pointer; color: var(--text);
+    transition: all 0.2s; font-weight: 300;
+  }
+  .hook-item:hover { border-color: var(--border-med); background: var(--bg-tertiary); }
+  .hook-item.selected { border-color: rgba(108,99,255,0.5); background: var(--grad-active); }
+  .hook-num { font-size: 10px; font-weight: 600; color: var(--accent-2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .hist-item {
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-radius: var(--radius-md); margin-bottom: 8px;
+    background: var(--bg-secondary); transition: border-color 0.2s;
+  }
+  .hist-item:hover { border-color: var(--border-med); }
+  .hist-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .hist-pillar { font-size: 11px; font-weight: 600; color: var(--accent-2); }
+  .hist-date { font-size: 11px; color: var(--text-tertiary); }
+  .hist-preview {
+    font-size: 13px; color: var(--text); line-height: 1.5; font-weight: 300;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .hist-full {
+    font-size: 13px; color: var(--text); line-height: 1.6; white-space: pre-wrap; font-weight: 300;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: none;
+  }
+  .hist-actions { display: flex; gap: 6px; margin-top: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .expand-btn {
+    font-size: 11px; color: var(--text-secondary); cursor: pointer;
+    background: none; border: none; font-family: var(--font); padding: 0; font-weight: 500;
+  }
+  .expand-btn:hover { color: var(--accent-2); }
+  .empty-state { text-align: center; padding: 2.5rem 0; color: var(--text-tertiary); font-size: 13px; font-weight: 300; }
+
+  @media (max-width: 520px) {
+    .cta-grid { grid-template-columns: 1fr; }
+    .btn-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Mactech LinkedIn Post Builder</h1>
+    <p>Nuclear workforce solutions content, built to your style rules.</p>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Anthropic API key</div>
+    <style>.card:first-of-type { border-top: 2px solid; border-image: linear-gradient(90deg, #6c63ff, #a78bfa, #06b6d4) 1; }</style>
+    <div class="api-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-..." />
+      <button class="btn btn-sm" onclick="saveKey()">Save</button>
+    </div>
+    <div id="keyStatus" class="status" style="margin-top:6px;"></div>
+  </div>
+
+  <div class="card" style="padding-bottom: 0.5rem;">
+
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('write',this)">Write post</button>
+      <button class="tab" onclick="switchTab('hooks',this)">Hooks</button>
+      <button class="tab" onclick="switchTab('history',this)">History <span id="histBadge" class="badge">0</span></button>
+    </div>
+
+    <!-- WRITE TAB -->
+    <div id="tab-write" class="panel active">
+
+      <div class="section-label">Content pillar</div>
+      <div class="pill-group" id="pillarGroup">
+        <div class="pill active" data-val="Industry Insight" onclick="togglePill(this,'pillar')">Industry insight</div>
+        <div class="pill" data-val="People & Stories" onclick="togglePill(this,'pillar')">People & stories</div>
+        <div class="pill" data-val="Thought Leadership" onclick="togglePill(this,'pillar')">Thought leadership</div>
+        <div class="pill" data-val="Job / Opportunity" onclick="togglePill(this,'pillar')">Job / opportunity</div>
+      </div>
+
+      <div class="section-label">Tone</div>
+      <div class="pill-group" id="toneGroup">
+        <div class="pill active" data-val="Informed and direct" onclick="togglePill(this,'tone')">Informed and direct</div>
+        <div class="pill" data-val="Conversational" onclick="togglePill(this,'tone')">Conversational</div>
+        <div class="pill" data-val="Authoritative" onclick="togglePill(this,'tone')">Authoritative</div>
+        <div class="pill" data-val="Human and candid" onclick="togglePill(this,'tone')">Human and candid</div>
+      </div>
+
+      <div class="section-label">Post length</div>
+      <div class="pill-group" id="lengthGroup">
+        <div class="pill" data-val="short" onclick="togglePill(this,'length')">Short (under 150 words)</div>
+        <div class="pill active" data-val="medium" onclick="togglePill(this,'length')">Medium (150–250 words)</div>
+        <div class="pill" data-val="long" onclick="togglePill(this,'length')">Long (250–350 words)</div>
+      </div>
+
+      <div class="section-label">Call to action</div>
+      <div class="cta-grid" id="ctaGrid">
+        <div class="cta-option selected" data-val="none" onclick="selectCTA(this)">
+          <div class="cta-label">None</div>
+          <div class="cta-desc">Let the post close naturally</div>
+        </div>
+        <div class="cta-option" data-val="comment" onclick="selectCTA(this)">
+          <div class="cta-label">Prompt a comment</div>
+          <div class="cta-desc">Ask a question to drive discussion</div>
+        </div>
+        <div class="cta-option" data-val="link" onclick="selectCTA(this)">
+          <div class="cta-label">Link in bio / comments</div>
+          <div class="cta-desc">Direct to resource or page</div>
+        </div>
+        <div class="cta-option" data-val="tag" onclick="selectCTA(this)">
+          <div class="cta-label">Tag someone</div>
+          <div class="cta-desc">Invite a specific person to respond</div>
+        </div>
+        <div class="cta-option" data-val="follow" onclick="selectCTA(this)">
+          <div class="cta-label">Follow for more</div>
+          <div class="cta-desc">Soft audience-building nudge</div>
+        </div>
+        <div class="cta-option" data-val="share" onclick="selectCTA(this)">
+          <div class="cta-label">Share this</div>
+          <div class="cta-desc">Ask readers to repost</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-bottom:8px;">Topic or brief</div>
+      <textarea id="topicInput" rows="4" placeholder="e.g. The nuclear skills shortage is getting worse. Hinkley C needs 40,000 workers by 2030. What does that actually mean for the industry?"></textarea>
+
+      <hr class="divider">
+
+      <div class="section-label" style="margin-bottom:6px;">Selected hook <span id="hookBadge" class="badge">none</span></div>
+      <div id="selectedHookDisplay" style="font-size:13px; color:var(--text-tertiary); margin-bottom:8px; font-style:italic;">No hook selected. Use the Hooks tab first, or leave blank.</div>
+      <div id="clearHookRow" style="display:none; margin-bottom:1rem;">
+        <button class="btn btn-xs" onclick="clearHook()">Clear hook</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="generatePost()">Generate post</button>
+        <button class="btn" onclick="generatePost()">Regenerate</button>
+      </div>
+      <div id="writeStatus" class="status"></div>
+
+      <div id="postOutput" class="output-area">
+        <span class="output-placeholder">Your LinkedIn post will appear here...</span>
+      </div>
+      <div class="output-actions" id="outputActions" style="display:none;">
+        <button class="btn btn-sm" onclick="copyPost()" id="copyBtn">Copy</button>
+        <button class="btn btn-sm" onclick="exportPost()">Export .txt</button>
+        <button class="btn btn-sm" onclick="saveToHistory()" id="saveBtn">Save to history</button>
+      </div>
+
+      <div class="char-bar">
+        <span class="char-count" id="charCount">0 / 3000</span>
+        <div class="char-track"><div class="char-fill" id="charFill" style="width:0%"></div></div>
+      </div>
+
+    </div>
+
+    <!-- HOOKS TAB -->
+    <div id="tab-hooks" class="panel">
+
+      <div class="section-label" style="margin-bottom:8px;">Topic for hooks</div>
+      <textarea id="hookTopic" rows="3" placeholder="e.g. UK nuclear skills shortage, Hinkley C workforce, mobilisation challenges..."></textarea>
+
+      <div class="section-label" style="margin-top:1rem; margin-bottom:8px;">Hook style</div>
+      <div class="pill-group" id="hookStyleGroup">
+        <div class="pill active" data-val="Bold claim" onclick="togglePill(this,'hookStyle')">Bold claim</div>
+        <div class="pill" data-val="Surprising stat" onclick="togglePill(this,'hookStyle')">Surprising stat</div>
+        <div class="pill" data-val="Question" onclick="togglePill(this,'hookStyle')">Question</div>
+        <div class="pill" data-val="Contrarian" onclick="togglePill(this,'hookStyle')">Contrarian</div>
+        <div class="pill" data-val="Story opening" onclick="togglePill(this,'hookStyle')">Story opening</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="generateHooks()">Generate 5 hooks</button>
+      </div>
+      <div id="hookStatus" class="status"></div>
+
+      <div id="hooksGrid" class="hooks-grid" style="display:none;"></div>
+
+      <div id="useHookRow" style="display:none; margin-bottom:1.5rem;">
+        <button class="btn" onclick="useSelectedHook()">Use in post ↗</button>
+      </div>
+
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="tab-history" class="panel">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:0.75rem;">
+        <button class="btn btn-xs" onclick="clearHistory()">Clear all</button>
+      </div>
+      <div id="historyList">
+        <div class="empty-state">No posts saved yet. Generate a post and hit "Save to history".</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let selectedPillar = 'Industry Insight';
+let selectedTone = 'Informed and direct';
+let selectedLength = 'medium';
+let selectedHookStyle = 'Bold claim';
+let selectedCTA = 'none';
+let selectedHook = null;
+let lastPostText = '';
+
+const SYSTEM_PROMPT = `You are a LinkedIn content writer for Mactech Energy Group, a UK-based nuclear workforce solutions and staffing company operating across Hinkley Point C, Sizewell C, and related nuclear projects.
+
+WRITING RULES (follow exactly):
+- No em dashes anywhere
+- No bullet points in the post body
+- No "recruitment" language — use "workforce solutions", "placement", "mobilisation"
+- Do not mention Assystem (parent company)
+- Write in prose only, not lists
+- Avoid the pattern "it's not just X, it's Y"
+- No hollow openers like "In today's world..." or "Now more than ever..."
+- No corporate waffle — write with specific takes, not neutral observations
+- Sound genuinely human, like someone who knows this industry deeply
+- No hashtags unless 1-2 highly relevant ones at the very end
+- Do not start the post with "I" as the first word
+- Write for a LinkedIn audience of nuclear professionals, engineers, project managers, and workforce planners`;
+
+const CTA_INSTRUCTIONS = {
+  none: '',
+  comment: 'End the post with a genuine, specific question that invites the reader to share their perspective in the comments. Make it feel natural, not forced.',
+  link: 'Close the post with a brief, natural sentence directing readers to a link in the comments or bio for more information.',
+  tag: 'End with a line that invites a relevant person to weigh in — something like "Interested to hear your take on this" addressed to a placeholder [Name].',
+  follow: 'Add a brief, understated closing line encouraging readers to follow the page for more on this topic.',
+  share: 'Add a natural closing line encouraging readers to share the post if they found it useful.'
+};
+
+function saveKey() {
+  const val = document.getElementById('apiKey').value.trim();
+  if (val.startsWith('sk-ant-')) {
+    try { localStorage.setItem('mac_api_key', val); } catch(e) {}
+    setStatus('keyStatus', 'Key saved.', 'ok');
+  } else {
+    setStatus('keyStatus', 'Key should start with sk-ant-', 'error');
+  }
+}
+
+function setStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status' + (type ? ' ' + type : '');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const saved = localStorage.getItem('mac_api_key');
+    if (saved) { document.getElementById('apiKey').value = saved; setStatus('keyStatus', 'Key loaded from storage.', ''); }
+  } catch(e) {}
+  renderHistory();
+});
+
+function togglePill(el, group) {
+  el.closest('.pill-group').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  if (group === 'pillar') selectedPillar = el.dataset.val;
+  if (group === 'tone') selectedTone = el.dataset.val;
+  if (group === 'length') selectedLength = el.dataset.val;
+  if (group === 'hookStyle') selectedHookStyle = el.dataset.val;
+}
+
+function selectCTA(el) {
+  document.querySelectorAll('.cta-option').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCTA = el.dataset.val;
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'history') renderHistory();
+}
+
+function getKey() {
+  try { return document.getElementById('apiKey').value.trim() || localStorage.getItem('mac_api_key') || ''; }
+  catch(e) { return document.getElementById('apiKey').value.trim() || ''; }
+}
+
+function getLengthGuide() {
+  if (selectedLength === 'short') return 'Write a short post under 150 words.';
+  if (selectedLength === 'medium') return 'Write a medium-length post between 150 and 250 words.';
+  return 'Write a longer post between 250 and 350 words.';
+}
+
+async function callClaude(messages, statusId) {
+  const key = getKey();
+  if (!key) { setStatus(statusId, 'No API key saved.', 'error'); return null; }
+  setStatus(statusId, 'Generating...', 'loading');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: SYSTEM_PROMPT, messages })
+    });
+    const data = await res.json();
+    if (data.error) { setStatus(statusId, data.error.message, 'error'); return null; }
+    setStatus(statusId, '', '');
+    return data.content[0].text;
+  } catch(e) {
+    setStatus(statusId, 'Request failed. Check your API key and internet connection.', 'error');
+    return null;
+  }
+}
+
+async function generatePost() {
+  const topic = document.getElementById('topicInput').value.trim();
+  if (!topic) { setStatus('writeStatus', 'Enter a topic first.', 'error'); return; }
+  let prompt = `Content pillar: ${selectedPillar}\nTone: ${selectedTone}\n${getLengthGuide()}\n\nTopic / brief:\n${topic}`;
+  if (selectedHook) prompt += `\n\nOpen with this exact hook as the first line:\n"${selectedHook}"`;
+  if (selectedCTA !== 'none') prompt += `\n\nCTA instruction: ${CTA_INSTRUCTIONS[selectedCTA]}`;
+  prompt += '\n\nWrite the LinkedIn post now. Output only the post text, nothing else.';
+  const text = await callClaude([{ role: 'user', content: prompt }], 'writeStatus');
+  if (text) setPostOutput(text);
+}
+
+function setPostOutput(text) {
+  lastPostText = text;
+  document.getElementById('postOutput').textContent = text;
+  document.getElementById('outputActions').style.display = 'flex';
+  updateCharCount(text);
+}
+
+function updateCharCount(text) {
+  const len = text.length;
+  const pct = Math.min((len / 3000) * 100, 100);
+  document.getElementById('charCount').textContent = len.toLocaleString() + ' / 3000';
+  const fill = document.getElementById('charFill');
+  fill.style.width = pct.toFixed(1) + '%';
+  fill.className = 'char-fill' + (pct > 100 ? ' over' : pct > 80 ? ' warn' : '');
+}
+
+function copyPost() {
+  if (!lastPostText) return;
+  navigator.clipboard.writeText(lastPostText).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+
+function exportPost() {
+  if (!lastPostText) return;
+  const topic = document.getElementById('topicInput').value.trim().slice(0, 40).replace(/[^a-z0-9 ]/gi, '').trim().replace(/ /g, '_') || 'post';
+  const date = new Date().toISOString().slice(0, 10);
+  download(`mactech_${topic}_${date}.txt`, lastPostText);
+}
+
+function download(filename, text) {
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function saveToHistory() {
+  if (!lastPostText) return;
+  try {
+    const history = JSON.parse(localStorage.getItem('mac_post_history') || '[]');
+    history.unshift({
+      id: Date.now(),
+      pillar: selectedPillar,
+      tone: selectedTone,
+      topic: document.getElementById('topicInput').value.trim().slice(0, 80),
+      text: lastPostText,
+      date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    });
+    if (history.length > 50) history.pop();
+    localStorage.setItem('mac_post_history', JSON.stringify(history));
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = 'Saved!';
+    setTimeout(() => btn.textContent = 'Save to history', 1800);
+    updateHistBadge(history.length);
+  } catch(e) {}
+}
+
+function updateHistBadge(count) {
+  document.getElementById('histBadge').textContent = count;
+}
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('mac_post_history') || '[]'); } catch(e) { return []; }
+}
+
+function renderHistory() {
+  const history = getHistory();
+  updateHistBadge(history.length);
+  const el = document.getElementById('historyList');
+  if (!history.length) {
+    el.innerHTML = '<div class="empty-state">No posts saved yet. Generate a post and hit "Save to history".</div>';
+    return;
+  }
+  el.innerHTML = history.map((h, i) => `
+    <div class="hist-item">
+      <div class="hist-meta">
+        <span class="hist-pillar">${h.pillar} &middot; ${h.tone}</span>
+        <span class="hist-date">${h.date}</span>
+      </div>
+      <div class="hist-preview">${h.text.replace(/</g,'&lt;')}</div>
+      <div class="hist-full" id="hf-${h.id}">${h.text.replace(/</g,'&lt;')}</div>
+      <div class="hist-actions">
+        <button class="expand-btn" onclick="toggleHistFull(${h.id}, this)">Show full post</button>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-xs" onclick="loadToEditor(${i})">Load into editor</button>
+          <button class="btn btn-xs" onclick="exportHistPost(${i})">Export .txt</button>
+          <button class="btn btn-xs" onclick="copyHistPost(${i})">Copy</button>
+          <button class="btn btn-xs" onclick="deleteHistPost(${h.id})">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleHistFull(id, btn) {
+  const el = document.getElementById('hf-' + id);
+  const item = el.closest('.hist-item');
+  const preview = item.querySelector('.hist-preview');
+  if (el.style.display === 'block') {
+    el.style.display = 'none';
+    preview.style.display = '-webkit-box';
+    btn.textContent = 'Show full post';
+  } else {
+    el.style.display = 'block';
+    preview.style.display = 'none';
+    btn.textContent = 'Collapse';
+  }
+}
+
+function loadToEditor(i) {
+  const h = getHistory()[i];
+  if (!h) return;
+  document.getElementById('topicInput').value = h.topic;
+  lastPostText = h.text;
+  document.getElementById('postOutput').textContent = h.text;
+  document.getElementById('outputActions').style.display = 'flex';
+  updateCharCount(h.text);
+  switchTab('write', document.querySelector('.tab'));
+}
+
+function exportHistPost(i) {
+  const h = getHistory()[i];
+  if (!h) return;
+  const name = h.topic.slice(0, 40).replace(/[^a-z0-9 ]/gi, '').trim().replace(/ /g, '_') || 'post';
+  download(`mactech_${name}_${h.date.replace(/ /g,'_')}.txt`, h.text);
+}
+
+function copyHistPost(i) {
+  const h = getHistory()[i];
+  if (!h) return;
+  navigator.clipboard.writeText(h.text);
+}
+
+function deleteHistPost(id) {
+  try {
+    const history = getHistory().filter(h => h.id !== id);
+    localStorage.setItem('mac_post_history', JSON.stringify(history));
+    renderHistory();
+  } catch(e) {}
+}
+
+function clearHistory() {
+  if (!confirm('Clear all saved posts?')) return;
+  try { localStorage.removeItem('mac_post_history'); renderHistory(); } catch(e) {}
+}
+
+async function generateHooks() {
+  const topic = document.getElementById('hookTopic').value.trim();
+  if (!topic) { setStatus('hookStatus', 'Enter a topic first.', 'error'); return; }
+  const prompt = `Generate 5 LinkedIn post opening hooks for Mactech Energy Group (nuclear workforce solutions) on this topic: "${topic}"\n\nHook style: ${selectedHookStyle}\n\nRules:\n- Each hook is a single sentence or two short punchy sentences max\n- No em dashes\n- No hollow openers\n- No "it's not just X, it's Y" pattern\n- Make a nuclear industry professional stop scrolling\n- Specific and direct, not vague or generic\n\nReturn ONLY a JSON array of 5 strings. No preamble, no markdown fences. Example: ["Hook one.", "Hook two.", "Hook three.", "Hook four.", "Hook five."]`;
+  const text = await callClaude([{ role: 'user', content: prompt }], 'hookStatus');
+  if (!text) return;
+  try {
+    const hooks = JSON.parse(text.replace(/```json|```/g, '').trim());
+    renderHooks(hooks);
+  } catch(e) {
+    setStatus('hookStatus', 'Could not parse hooks. Try again.', 'error');
+  }
+}
+
+function renderHooks(hooks) {
+  const grid = document.getElementById('hooksGrid');
+  grid.innerHTML = '';
+  grid.style.display = 'grid';
+  hooks.forEach((h, i) => {
+    const div = document.createElement('div');
+    div.className = 'hook-item';
+    div.innerHTML = `<div class="hook-num">Hook ${i + 1}</div>${h}`;
+    div.onclick = () => {
+      grid.querySelectorAll('.hook-item').forEach(x => x.classList.remove('selected'));
+      div.classList.add('selected');
+      selectedHook = h;
+      document.getElementById('useHookRow').style.display = 'flex';
+    };
+    grid.appendChild(div);
+  });
+}
+
+function useSelectedHook() {
+  if (!selectedHook) return;
+  const d = document.getElementById('selectedHookDisplay');
+  d.textContent = selectedHook;
+  d.style.color = 'var(--text)';
+  d.style.fontStyle = 'normal';
+  document.getElementById('hookBadge').textContent = 'selected';
+  document.getElementById('clearHookRow').style.display = 'block';
+  switchTab('write', document.querySelector('.tab'));
+}
+
+function clearHook() {
+  selectedHook = null;
+  const d = document.getElementById('selectedHookDisplay');
+  d.textContent = 'No hook selected. Use the Hooks tab first, or leave blank.';
+  d.style.color = 'var(--text-tertiary)';
+  d.style.fontStyle = 'italic';
+  document.getElementById('hookBadge').textContent = 'none';
+  document.getElementById('clearHookRow').style.display = 'none';
+}
+</script>
+</body>
+</html>
