@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mactech Newsletter Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1a1d2e;
+  --bg-secondary: #141624;
+  --bg-tertiary: #222540;
+  --bg-card: #1e2135;
+  --text: #e8eaf6;
+  --text-secondary: #8b90b8;
+  --text-tertiary: #4a4f72;
+  --border: rgba(255,255,255,0.07);
+  --border-med: rgba(255,255,255,0.13);
+  --border-strong: rgba(139,147,255,0.5);
+  --accent: #6c63ff;
+  --accent-2: #a78bfa;
+  --accent-3: #06b6d4;
+  --grad-header: linear-gradient(135deg, #6c63ff 0%, #a78bfa 50%, #06b6d4 100%);
+  --grad-btn: linear-gradient(135deg, #6c63ff, #a78bfa);
+  --grad-active: linear-gradient(135deg, rgba(108,99,255,0.25), rgba(167,139,250,0.15));
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --font: 'Poppins', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', monospace;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-secondary);
+  background-image: radial-gradient(ellipse at 20% 0%, rgba(108,99,255,0.12) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 100%, rgba(6,182,212,0.08) 0%, transparent 60%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+}
+
+.container { max-width: 900px; margin: 0 auto; }
+
+.header { margin-bottom: 2rem; }
+.header h1 {
+  font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+  background: var(--grad-header);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  display: inline-block;
+}
+.header p { font-size: 13px; color: var(--text-secondary); margin-top: 5px; font-weight: 300; }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+.card-accent { border-top: 2px solid; border-image: linear-gradient(90deg, #6c63ff, #a78bfa, #06b6d4) 1; }
+
+.section-label {
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+}
+
+.api-row { display: flex; gap: 8px; align-items: center; }
+.api-row input { flex: 1; font-family: var(--font-mono); font-size: 12px; }
+
+input[type="text"], input[type="password"], select, textarea {
+  width: 100%; padding: 9px 12px; font-size: 13px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text); font-family: var(--font);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--border-strong);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+}
+textarea { resize: vertical; line-height: 1.6; }
+
+.btn {
+  padding: 9px 18px; font-size: 12px; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--border-med); border-radius: var(--radius-md);
+  background: var(--bg-tertiary); color: var(--text); font-family: var(--font);
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn:hover { background: var(--bg-card); border-color: var(--border-med); }
+.btn:active { transform: scale(0.98); }
+.btn-primary {
+  background: var(--grad-btn); color: #fff; border: none;
+  box-shadow: 0 4px 15px rgba(108,99,255,0.35);
+}
+.btn-primary:hover { box-shadow: 0 6px 20px rgba(108,99,255,0.5); opacity: 0.92; }
+.btn-sm { padding: 6px 13px; font-size: 11px; }
+.btn-xs { padding: 3px 10px; font-size: 11px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+
+.pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+.pill {
+  padding: 5px 14px; font-size: 11px; font-weight: 500; border-radius: 20px; cursor: pointer;
+  border: 1px solid var(--border-med); background: transparent;
+  color: var(--text-secondary); transition: all 0.2s; font-family: var(--font); user-select: none;
+}
+.pill.active { background: var(--grad-active); color: var(--text); border-color: rgba(108,99,255,0.5); font-weight: 600; }
+.pill:hover { border-color: rgba(108,99,255,0.4); color: var(--text); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+.section-block {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.section-block-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;
+}
+.section-block-title {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--grad-btn); display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+
+.job-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 1rem; margin-bottom: 8px;
+}
+.job-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.job-item-title { font-size: 12px; font-weight: 600; color: var(--accent-2); }
+
+.news-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 1rem; margin-bottom: 8px;
+}
+
+.status { font-size: 11px; color: var(--text-secondary); padding: 4px 0; min-height: 20px; font-weight: 400; }
+.status.loading { color: var(--accent-2); }
+.status.error { color: #f87171; }
+.status.ok { color: #34d399; }
+
+.output-wrap {
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1rem;
+}
+.output-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.output-tab {
+  padding: 8px 16px; font-size: 11px; font-weight: 500; cursor: pointer;
+  background: none; border: none; color: var(--text-secondary); font-family: var(--font);
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s;
+}
+.output-tab.active { color: var(--accent-2); border-bottom-color: var(--accent-2); }
+.output-panel { display: none; padding: 1.25rem; }
+.output-panel.active { display: block; }
+
+.preview-area {
+  font-size: 14px; line-height: 1.8; color: var(--text); white-space: pre-wrap; font-weight: 300;
+  min-height: 200px;
+}
+.preview-placeholder { color: var(--text-tertiary); font-size: 13px; }
+
+.html-area {
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); white-space: pre-wrap; overflow-x: auto;
+  min-height: 200px;
+}
+
+.output-actions { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 1.25rem 1.25rem; }
+
+.badge {
+  display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 600; border-radius: 10px;
+  background: rgba(108,99,255,0.2); color: var(--accent-2); margin-left: 5px;
+}
+
+.tone-desc { font-size: 11px; color: var(--text-secondary); margin-top: -0.5rem; margin-bottom: 1rem; font-weight: 300; font-style: italic; }
+
+@media (max-width: 560px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Mactech Newsletter Builder</h1>
+    <p>Candidate-facing email newsletters, built to your voice.</p>
+  </div>
+
+  <!-- API KEY -->
+  <div class="card card-accent">
+    <div class="section-label">Anthropic API key</div>
+    <div class="api-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-..." />
+      <button class="btn btn-sm" onclick="saveKey()">Save</button>
+    </div>
+    <div id="keyStatus" class="status" style="margin-top:6px;"></div>
+  </div>
+
+  <!-- NEWSLETTER SETTINGS -->
+  <div class="card">
+    <div class="section-label" style="margin-bottom:1rem;">Newsletter settings</div>
+
+    <div class="grid-2">
+      <div>
+        <div class="section-label">Subject line tone</div>
+        <select id="subjectTone">
+          <option value="direct">Direct and informative</option>
+          <option value="urgent">Urgent / time-sensitive</option>
+          <option value="conversational">Conversational</option>
+          <option value="intriguing">Intriguing / curiosity-led</option>
+        </select>
+      </div>
+      <div>
+        <div class="section-label">Newsletter edition</div>
+        <input type="text" id="edition" placeholder="e.g. March 2026, Issue #12" />
+      </div>
+    </div>
+
+    <div class="section-label">Tone of voice</div>
+    <div class="pill-group" id="toneGroup">
+      <div class="pill active" data-val="warm and direct" onclick="togglePill(this,'tone')">Warm and direct</div>
+      <div class="pill" data-val="professional and informative" onclick="togglePill(this,'tone')">Professional</div>
+      <div class="pill" data-val="energetic and motivating" onclick="togglePill(this,'tone')">Energetic</div>
+      <div class="pill" data-val="conversational and human" onclick="togglePill(this,'tone')">Conversational</div>
+    </div>
+
+    <div class="section-label">Opening context (optional)</div>
+    <textarea id="openingContext" rows="2" placeholder="e.g. Hinkley C mobilisation is ramping up, lots of new roles opening across civils and M&E..."></textarea>
+  </div>
+
+  <!-- SECTION 1: INTRO -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-title">
+        <div class="section-num">1</div>
+        Intro / opening
+      </div>
+    </div>
+    <div class="section-label">What's the newsletter about this month?</div>
+    <textarea id="introBrief" rows="3" placeholder="e.g. Big month for Hinkley C — new civils roles opening, welcoming workers back from offshore, and a skills update from the industry..."></textarea>
+  </div>
+
+  <!-- SECTION 2: FEATURED JOBS -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-title">
+        <div class="section-num">2</div>
+        Featured jobs <span class="badge" id="jobCount">0 added</span>
+      </div>
+      <button class="btn btn-sm" onclick="addJob()">+ Add job</button>
+    </div>
+    <div id="jobsList"></div>
+    <div id="jobsEmpty" style="font-size:12px; color:var(--text-tertiary); font-style:italic;">No jobs added yet. Click "+ Add job" to add roles to feature.</div>
+  </div>
+
+  <!-- SECTION 3: INDUSTRY NEWS -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-title">
+        <div class="section-num">3</div>
+        Industry news / insight <span class="badge" id="newsCount">0 added</span>
+      </div>
+      <button class="btn btn-sm" onclick="addNews()">+ Add item</button>
+    </div>
+    <div id="newsList"></div>
+    <div id="newsEmpty" style="font-size:12px; color:var(--text-tertiary); font-style:italic;">No news items added. Add 1–3 industry topics or headlines to include.</div>
+  </div>
+
+  <!-- SECTION 4: CTA -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-title">
+        <div class="section-num">4</div>
+        Call to action
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="section-label">CTA type</div>
+        <select id="ctaType">
+          <option value="apply">Apply for roles / visit jobs page</option>
+          <option value="refer">Refer a colleague</option>
+          <option value="register">Register your interest / CV</option>
+          <option value="contact">Get in touch with the team</option>
+          <option value="follow">Follow us on LinkedIn</option>
+        </select>
+      </div>
+      <div>
+        <div class="section-label">CTA link (optional)</div>
+        <input type="text" id="ctaLink" placeholder="e.g. mactech.co.uk/jobs" />
+      </div>
+    </div>
+    <div class="section-label" style="margin-top:0.75rem;">Closing note (optional)</div>
+    <textarea id="closingNote" rows="2" placeholder="e.g. Any personal sign-off, team message, or seasonal note to include at the end..."></textarea>
+  </div>
+
+  <!-- GENERATE -->
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="generateNewsletter()" id="generateBtn">Generate newsletter</button>
+    <button class="btn" onclick="generateNewsletter()">Regenerate</button>
+  </div>
+  <div id="generateStatus" class="status"></div>
+
+  <!-- OUTPUT -->
+  <div class="output-wrap" id="outputWrap" style="display:none;">
+    <div class="output-tabs">
+      <button class="output-tab active" onclick="switchOutputTab('preview', this)">Preview</button>
+      <button class="output-tab" onclick="switchOutputTab('html', this)">HTML (copy to email tool)</button>
+      <button class="output-tab" onclick="switchOutputTab('subject', this)">Subject lines</button>
+    </div>
+    <div id="out-preview" class="output-panel active">
+      <div class="preview-area" id="previewContent"></div>
+    </div>
+    <div id="out-html" class="output-panel">
+      <div class="html-area" id="htmlContent"></div>
+    </div>
+    <div id="out-subject" class="output-panel">
+      <div class="preview-area" id="subjectContent"></div>
+    </div>
+    <div class="output-actions">
+      <button class="btn btn-sm" onclick="copyOutput()" id="copyBtn">Copy</button>
+      <button class="btn btn-sm" onclick="exportTxt()">Export .txt</button>
+      <button class="btn btn-sm" onclick="exportHtml()">Export .html</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let selectedTone = 'warm and direct';
+let jobs = [];
+let newsItems = [];
+let lastOutput = { preview: '', html: '', subject: '' };
+let currentOutputTab = 'preview';
+
+const SYSTEM_PROMPT = `You are an email newsletter writer for Mactech Energy Group, a UK-based nuclear workforce solutions company placing workers across Hinkley Point C, Sizewell C, and related nuclear projects.
+
+You write candidate-facing newsletters aimed at nuclear workers, engineers, tradespeople, and site staff.
+
+WRITING RULES:
+- No em dashes anywhere
+- No bullet points in prose sections — write in flowing sentences
+- Never use "recruitment" language — use "workforce solutions", "placement", "mobilisation", "opportunities"
+- Do not mention Assystem (parent company)
+- Sound genuinely human and warm, not corporate
+- Avoid hollow phrases like "exciting opportunity", "we are pleased to announce", "in today's landscape"
+- Write with specific detail, not vague generalities
+- British English spelling throughout
+- Keep it readable and scannable — short paragraphs, clear section breaks`;
+
+function saveKey() {
+  const val = document.getElementById('apiKey').value.trim();
+  if (val.startsWith('sk-ant-')) {
+    try { localStorage.setItem('mac_api_key', val); } catch(e) {}
+    setStatus('keyStatus', 'Key saved.', 'ok');
+  } else {
+    setStatus('keyStatus', 'Key should start with sk-ant-', 'error');
+  }
+}
+
+function setStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status' + (type ? ' ' + type : '');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const saved = localStorage.getItem('mac_api_key');
+    if (saved) { document.getElementById('apiKey').value = saved; setStatus('keyStatus', 'Key loaded.', ''); }
+  } catch(e) {}
+});
+
+function togglePill(el, group) {
+  el.closest('.pill-group').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  if (group === 'tone') selectedTone = el.dataset.val;
+}
+
+function getKey() {
+  try { return document.getElementById('apiKey').value.trim() || localStorage.getItem('mac_api_key') || ''; }
+  catch(e) { return document.getElementById('apiKey').value.trim() || ''; }
+}
+
+// JOBS
+function addJob() {
+  const id = Date.now();
+  jobs.push({ id, title: '', location: '', type: '', rate: '', brief: '' });
+  renderJobs();
+}
+
+function removeJob(id) {
+  jobs = jobs.filter(j => j.id !== id);
+  renderJobs();
+}
+
+function renderJobs() {
+  const list = document.getElementById('jobsList');
+  const empty = document.getElementById('jobsEmpty');
+  document.getElementById('jobCount').textContent = jobs.length + ' added';
+  if (!jobs.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.innerHTML = jobs.map((j, i) => `
+    <div class="job-item">
+      <div class="job-item-header">
+        <span class="job-item-title">Role ${i + 1}</span>
+        <button class="btn btn-xs" onclick="removeJob(${j.id})">Remove</button>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+        <div>
+          <div class="section-label">Job title</div>
+          <input type="text" placeholder="e.g. Welding Inspector" value="${j.title}" oninput="updateJob(${j.id},'title',this.value)" />
+        </div>
+        <div>
+          <div class="section-label">Location</div>
+          <input type="text" placeholder="e.g. Hinkley Point C, Somerset" value="${j.location}" oninput="updateJob(${j.id},'location',this.value)" />
+        </div>
+        <div>
+          <div class="section-label">Contract type</div>
+          <input type="text" placeholder="e.g. Contract, 6 months" value="${j.type}" oninput="updateJob(${j.id},'type',this.value)" />
+        </div>
+        <div>
+          <div class="section-label">Rate / salary (optional)</div>
+          <input type="text" placeholder="e.g. £45–£50/hr CIS" value="${j.rate}" oninput="updateJob(${j.id},'rate',this.value)" />
+        </div>
+      </div>
+      <div class="section-label">Brief description (optional)</div>
+      <textarea rows="2" placeholder="Any key requirements, experience needed, or highlights..." oninput="updateJob(${j.id},'brief',this.value)">${j.brief}</textarea>
+    </div>
+  `).join('');
+}
+
+function updateJob(id, field, value) {
+  const job = jobs.find(j => j.id === id);
+  if (job) job[field] = value;
+}
+
+// NEWS
+function addNews() {
+  const id = Date.now();
+  newsItems.push({ id, headline: '', context: '' });
+  renderNews();
+}
+
+function removeNews(id) {
+  newsItems = newsItems.filter(n => n.id !== id);
+  renderNews();
+}
+
+function renderNews() {
+  const list = document.getElementById('newsList');
+  const empty = document.getElementById('newsEmpty');
+  document.getElementById('newsCount').textContent = newsItems.length + ' added';
+  if (!newsItems.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.innerHTML = newsItems.map((n, i) => `
+    <div class="news-item">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="font-size:11px; font-weight:600; color:var(--accent-2);">Item ${i + 1}</span>
+        <button class="btn btn-xs" onclick="removeNews(${n.id})">Remove</button>
+      </div>
+      <div class="section-label">Headline / topic</div>
+      <input type="text" placeholder="e.g. UK government confirms Sizewell C funding increase" value="${n.headline}" oninput="updateNews(${n.id},'headline',this.value)" style="margin-bottom:8px;" />
+      <div class="section-label">Context or angle (optional)</div>
+      <textarea rows="2" placeholder="What's the relevance to nuclear workers? Any angle you want to take..." oninput="updateNews(${n.id},'context',this.value)">${n.context}</textarea>
+    </div>
+  `).join('');
+}
+
+function updateNews(id, field, value) {
+  const item = newsItems.find(n => n.id === id);
+  if (item) item[field] = value;
+}
+
+// GENERATE
+async function generateNewsletter() {
+  const key = getKey();
+  if (!key) { setStatus('generateStatus', 'No API key saved.', 'error'); return; }
+
+  const edition = document.getElementById('edition').value.trim();
+  const openingCtx = document.getElementById('openingContext').value.trim();
+  const introBrief = document.getElementById('introBrief').value.trim();
+  const subjectTone = document.getElementById('subjectTone').value;
+  const ctaType = document.getElementById('ctaType').value;
+  const ctaLink = document.getElementById('ctaLink').value.trim();
+  const closingNote = document.getElementById('closingNote').value.trim();
+
+  const jobsText = jobs.length ? jobs.map((j, i) =>
+    `Role ${i+1}: ${j.title}${j.location ? ' | ' + j.location : ''}${j.type ? ' | ' + j.type : ''}${j.rate ? ' | ' + j.rate : ''}${j.brief ? '\nDetails: ' + j.brief : ''}`
+  ).join('\n\n') : 'No specific roles provided — write a general "we have roles available" section.';
+
+  const newsText = newsItems.length ? newsItems.map((n, i) =>
+    `Item ${i+1}: ${n.headline}${n.context ? '\nAngle: ' + n.context : ''}`
+  ).join('\n\n') : 'No news items provided — skip this section or add a brief general industry note.';
+
+  const ctaMap = {
+    apply: 'encourage readers to apply for roles or visit the jobs page',
+    refer: 'encourage readers to refer a colleague and explain the referral benefit',
+    register: 'encourage readers to register their interest or submit their CV',
+    contact: 'encourage readers to get in touch with the Mactech team directly',
+    follow: 'encourage readers to follow Mactech on LinkedIn for updates'
+  };
+
+  const prompt = `Write a complete candidate-facing email newsletter for Mactech Energy Group.
+
+${edition ? 'Edition: ' + edition : ''}
+Tone of voice: ${selectedTone}
+${openingCtx ? 'Context for this edition: ' + openingCtx : ''}
+
+SECTION 1 — INTRO:
+Brief: ${introBrief || 'Write a warm, engaging opening that sets up this edition of the newsletter.'}
+
+SECTION 2 — FEATURED JOBS:
+${jobsText}
+
+SECTION 3 — INDUSTRY NEWS / INSIGHT:
+${newsText}
+
+SECTION 4 — CALL TO ACTION:
+CTA goal: ${ctaMap[ctaType]}
+${ctaLink ? 'Link to include: ' + ctaLink : ''}
+${closingNote ? 'Closing note: ' + closingNote : ''}
+
+OUTPUT FORMAT:
+Return a JSON object with exactly these keys:
+{
+  "subject_lines": ["subject line 1", "subject line 2", "subject line 3"],
+  "preview_text": "one sentence email preview text",
+  "newsletter_text": "the full newsletter as plain text with clear section headers",
+  "newsletter_html": "the full newsletter as clean HTML email markup (inline styles, no external CSS, suitable for pasting into Mailchimp or similar)"
+}
+
+Subject line tone: ${subjectTone}
+The newsletter_html should use a simple, clean email-safe structure: max-width 600px, white background, dark text, Mactech's brand colours (dark navy #1a1d2e for headers, purple accent #6c63ff for buttons/links). No complex layouts.
+
+Return ONLY the JSON object. No preamble, no markdown fences.`;
+
+  setStatus('generateStatus', 'Generating newsletter...', 'loading');
+  document.getElementById('generateBtn').textContent = 'Generating...';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    if (data.error) { setStatus('generateStatus', data.error.message, 'error'); document.getElementById('generateBtn').textContent = 'Generate newsletter'; return; }
+
+    const raw = data.content[0].text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(raw);
+
+    lastOutput.preview = parsed.newsletter_text || '';
+    lastOutput.html = parsed.newsletter_html || '';
+    lastOutput.subject = `Subject lines:\n\n${(parsed.subject_lines || []).map((s,i) => `${i+1}. ${s}`).join('\n')}\n\nPreview text:\n${parsed.preview_text || ''}`;
+
+    document.getElementById('previewContent').textContent = lastOutput.preview;
+    document.getElementById('htmlContent').textContent = lastOutput.html;
+    document.getElementById('subjectContent').textContent = lastOutput.subject;
+
+    document.getElementById('outputWrap').style.display = 'block';
+    document.getElementById('outputWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setStatus('generateStatus', '', '');
+  } catch(e) {
+    setStatus('generateStatus', 'Generation failed. Check your API key and try again.', 'error');
+  }
+  document.getElementById('generateBtn').textContent = 'Generate newsletter';
+}
+
+function switchOutputTab(tab, el) {
+  document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.output-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('out-' + tab).classList.add('active');
+  currentOutputTab = tab;
+}
+
+function getCurrentContent() {
+  return lastOutput[currentOutputTab] || '';
+}
+
+function copyOutput() {
+  const content = getCurrentContent();
+  if (!content) return;
+  navigator.clipboard.writeText(content).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+
+function exportTxt() {
+  if (!lastOutput.preview) return;
+  const edition = document.getElementById('edition').value.trim().replace(/[^a-z0-9 ]/gi,'').replace(/ /g,'_') || 'newsletter';
+  download(`mactech_${edition}.txt`, lastOutput.preview);
+}
+
+function exportHtml() {
+  if (!lastOutput.html) return;
+  const edition = document.getElementById('edition').value.trim().replace(/[^a-z0-9 ]/gi,'').replace(/ /g,'_') || 'newsletter';
+  download(`mactech_${edition}.html`, lastOutput.html);
+}
+
+function download(filename, text) {
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>
